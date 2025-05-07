@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <title>GASでHTML</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script> 
+    <style>
+      .game_btn{
+        height:120px;
+        border-radius:20px;
+        cursor: pointer;
+        transition: background-color 0.4s ease
+      }
+      .game_btn:hover{
+        background-color:#cccccc
+      }
+      .game_btn_font{
+        font-weight:bold;
+        font-size:25px;
+        margin-left:15px
+      }
+      .league_header_font{
+        font-size:25px;
+        text-align:center
+      }
+      .cell_paint{
+        background-color:#696969 !important;
+        color:red
+      }
+      .score_font{
+        font-weight:bold;
+        text-align:center;
+        font-size:20px
+      }
+      .gender_btn{
+        font-size:20px;
+        color:white;
+        width:150px;
+        border:none;
+        height:50px;
+        transition: filter 0.4s ease
+      }
+      .gender_btn:hover{
+        filter: brightness(85%);
+      }
+      .back_btn{
+        font-size:25px;
+        color:white;
+        width:100%;
+        border:none;
+        height:80px;
+        background-color:#00b395;
+        border-radius:10px;
+        margin-bottom:20px;
+        margin-top:20px
+      }
+      body {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      #app {
+        flex: 1;
+      }
+      .footer {
+        background: #333333;
+        height:200px;
+        text-align: center;
+      }
+      .mini_back_btn{
+        height:60px;
+        border-radius:40px;
+        border:none;
+        background-color:#00b395;
+        width:150px;
+        color:white;
+        font-size:20px
+      }
+      .win{
+        color:#bf9000
+      }
+      .lose{
+        color:#1155cc
+      }
+      .draw{
+        color:#38761d
+      }
+      .now_game_box{
+        overflow-y: scroll;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+
+        {{now_time.getHours()}}
+      <div style="text-align:center;border-bottom:solid 1px gray;padding:20px;box-shadow: 0px 5px 4px gray;width:100%">
+        <img src="https://lh3.googleusercontent.com/d/1qCEizWvP5J8DmPWwqkLE3onfI7j36giv" width="700px" style="text-align:center">
+      </div>
+      <div class="mx-auto m-4 ">
+        <div class="mx-auto m-1" v-if="page=='main'">
+
+          <p class="text-center" style="font-size:50px;font-weight:bold;color:#696969">得点実況</p>
+          <hr>
+
+          <template v-for="i in [['サッカー','ソフト'],['男バレー','男ドッジ']]">
+          <div class="row ms-3 me-3">
+
+            <template v-for="j in i">
+            <div class="card col m-3 p-4 game_btn" v-bind:style="'border:2px solid '+game_info[j]['color']" @click="page=j">
+              <div>
+                <p>
+                <img v-bind:src="game_info[j]['image']" width="65px" style="text-align:middle">
+                <span style="color:#696969;" class="game_btn_font">
+                  {{game_name[j]}}
+                </span>
+                </p>
+              </div>
+            </div>
+            </template>
+
+          </div>
+          </template>
+
+          <p class="text-center" style="font-size:50px;font-weight:bold;color:#696969;margin-top:70px">スケジュール</p>
+          <hr>
+          <div class="ms-5 me-5" style="margin-top:50px">
+            <div class="card" style="border-radius:20px;padding:20px;margin-top:40px;border:1px solid #00b395;">
+              <p style="font-size:35px;font-weight:bold">開催中の競技</p>
+              <p style="margin-top:-15px">テスト用に内部の時計を12時15分にしています。</p>
+              <hr style="margin-top:-10px">
+              <div class="row">
+                <div class="col-6">
+                  <div class="card " style="border-radius:20px;padding:20px;margin-top:10px;height:350px;border:1px solid #696969">
+                    <div class="now_game_box">
+                    <template v-for="i in now_game">
+                      <p style="font-size:25px;font-weight:bold">{{i}}</p>
+                      <hr style="margin-top:-10px">
+                    </template>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6" style="text-align:center;margin-top:10px;">
+                  <p style="font-weight:bold;font-size:45px;color:#00b395;border:2px solid #00b395;border-radius:60px;padding:5px;width:280px;">
+                    {{now_time.getHours()+"時"+now_time.getMinutes()+"分"}}
+                  </p>
+                  <p style="text-align:left;font-weight:bold;font-size:20px">15分以内に予定の競技</p>
+                  <hr>
+                  <div style="height:190px" class="now_game_box">
+                    <template v-for="i in coming_game">
+                      <p style="font-size:20px;font-weight:bold;text-align:left;color:#00b395">{{i}}</p>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-if="page!='main'">
+
+          <p class="text-center" style="font-size:50px;font-weight:bold;color:#696969">得点実況</p>
+          <hr>
+
+          <div class="ms-5 me-5 mt-4">
+          <div class="d-flex">
+          <p>
+            <img v-bind:src="game_info[page]['image']" width="100px" style="text-align:middle;margin-top:-20px">
+            <template v-if="page!='サッカー' && page!='ソフト'">
+              <template v-if="page[0]=='男'">
+                <span class="game_btn_font" style="color:#5f9ea0;font-size:60px">{{page[0]}}</span>
+              </template>
+              <template v-else>
+                <span class="game_btn_font" style="color:#f08080;font-size:60px">{{page[0]}}</span>
+              </template>
+              <span class="game_btn_font" style="color:#696969;font-size:60px">{{page.slice(1)}}</span>
+            </template>
+            <template v-else>
+              <span class="game_btn_font" style="color:#696969;font-size:60px">{{page}}</span>
+            </template>
+          </p>
+          <button class="ms-auto align-self-center mini_back_btn" @click="page='main'">ホームへ戻る</button>
+          </div>
+          <template v-if="page!='サッカー' && page!='ソフト'">
+          <button class="gender_btn" style="border-radius:15px 0px 0px 0px;margin-right:-5px;background-color:#5f9ea0" @click="page='男'+page.slice(1)">男子</button>
+          <button class="gender_btn" style="border-radius:0px 15px 0px 0px;background-color:#f08080" 
+          @click="page='女'+page.slice(1)">女子</button>
+          </template>
+          <div style="width:100%;height:1px;background-color:#696969;margin-top:-0px"></div>
+
+          <template v-for="(i) in league">
+            <table class="table table-bordered mt-4" style="border:2px solid #696969;border-radius:20px">
+              <thead>
+                <tr class="league_header_font" style="height:70px;padding:30px">
+                  <th>
+                    <div style="margin-bottom:10px">
+                    {{i[0]}}年
+                    </div>
+                  </th>
+                  <template v-for="t in teams">
+                  <th>
+                    <div style="margin-bottom:7px">
+                    {{t}}
+                    </div>
+                  </th>
+                  </template>
+                </tr>
+              </thead>
+              <tbody>
+                <template v-for="(j,j_index) in teams">
+                <tr>
+                  <th class="league_header_font" style="height:60px">
+                    <div style="margin-top:15px">
+                    {{j}}
+                    </div>
+                  </th>
+                  <template v-for="(k,k_index) in teams">
+                    <th v-bind:class="{'cell_paint':!(j_index-k_index),'score_font':true}">
+                      <template v-if="!(j==k)">
+                        <div style="margin-top:0px">
+                          <template v-if="score_data[page][i][j][j+k]['score'][0]!=score_data[page][i][j][j+k]['score'][2]">
+                            <span v-bind:class="score_data[page][i][j][j+k]['result']">
+                              {{score_data[page][i][j][j+k]["score"].join(' ')}}
+                            </span>
+                          </template>
+                          <template v-else>
+                            <span class="draw">
+                              {{score_data[page][i][j][j+k]["score"].join(' ')}}
+                            </span>
+                          </template>
+                          <br>
+                          <span v-bind:class="score_data[page][i][j][j+k]['result']">
+                            {{score_data[page][i][j][j+k]["result"]=="win" ? "◯" : score_data[page][i][j][j+k]["result"]=="lose" ? "✕" : "-"}}
+                          </span>
+                        </div>
+                      </template>
+                    </th>
+                  </template>
+                </tr>
+                </template>
+              </tbody>
+            </table>
+          </template>
+          <button class="back_btn" @click="page='main'">戻る</button>
+
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    
+    <div class="footer" >
+    </div>
+    
+  
+    <script>
+      new Vue({
+        el: '#app',
+        data: {
+          page:"main",
+          score_data:"",
+          teams:["AF","BE","CD","GH"],
+          league:["1st","2nd","3rd"],
+          game_info:{
+            "サッカー":{
+              "image":"https://lh3.googleusercontent.com/d/1Tw-v12QQsNkUI30SEcG1Tm54Ny7UIlpM",
+              "color":"#3a9bb6"},
+            "ソフト":{
+              "image":"https://lh3.googleusercontent.com/d/1fW-nKLeCc4uFMp0m7K0GxRSbK0FzMvdZ",
+              "color":"#22a151"},
+            "男バレー":{
+              "image":"https://lh3.googleusercontent.com/d/1AyrJm7kEbBrSgBQG-b9IhMruQyKw19cH",
+              "color":"#8f69a5 "},
+            "女バレー":{
+              "image":"https://lh3.googleusercontent.com/d/1AyrJm7kEbBrSgBQG-b9IhMruQyKw19cH",
+              "color":"#8f69a5 "},
+            "男ドッジ":{
+              "image":"https://lh3.googleusercontent.com/d/1aiUM7_P3obVdxg8oTm1Ri6Oa3jL2fjBf",
+              "color":"#e99250"},
+            "女ドッジ":{
+              "image":"https://lh3.googleusercontent.com/d/1aiUM7_P3obVdxg8oTm1Ri6Oa3jL2fjBf",
+              "color":"#e99250"}
+          },
+          game_name:{
+            "サッカー":"サッカー",
+            "ソフト":"ソフトボール",
+            "男バレー":"バレーボール",
+            "男ドッジ":"ドッジボール"
+          },
+          now_time:new Date(),
+          schedule:{"9:00":{"サッカー":["1/2","3/4"],"ソフト":["1/2","3/4"],"ドッジ":["1/2","3/4"],},
+            "9:20":{"ドッジ":["1/3","2/4"],"バレー":["1/2","3/4","2/4"]},
+            "9:25":{"サッカー":["1/3"]},
+            "9:30":{"ソフト":["1/3"]},
+            "9:40":{"ドッジ":["1/4","2/3"],"バレー":["1/4","2/3","1/3"]},
+
+            "10:00":{"サッカー":["5/8","6/7"],"ソフト":["5/8","6/7"],"ドッジ":["5/8","6/7"],},
+            "10:20":{"ドッジ":["6/8","5/7"],"バレー":["5/8","6/7","5/7"]},
+            "10:25":{"サッカー":["6/8"]},
+            "10:30":{"ソフト":["6/8"]},
+            "10:40":{"ドッジ":["5/6","7/8"],"バレー":["5/6","7/8","6/8"]},
+      
+            "11:00":{"サッカー":["9/10","11/12"],"ソフト":["9/10","11/12"],"ドッジ":["9/10","11/12"],},
+            "11:20":{"ドッジ":["9/11","10/12"],"バレー":["9/10","11/12","10/12"]},
+            "11:25":{"サッカー":["9/11"]},
+            "11:30":{"ソフト":["9/11"]},
+            "11:40":{"ドッジ":["9/12","10/11"],"バレー":["9/12","10/11","9/11"]},
+
+            "12:00":{"サッカー":["2/3","1/4"],"ソフト":["2/3","1/4"],"ドッジ":["1/2","3/4"],},
+            "12:20":{"ドッジ":["1/3","2/4"],"バレー":["1/2","3/4","2/4"]},
+            "12:25":{"サッカー":["2/4"]},
+            "12:30":{"ソフト":["2/4"]},
+            "12:40":{"ドッジ":["1/4","2/3"],"バレー":["1/4","2/3","1/3"]},
+
+            "13:00":{"サッカー":["7/8","5/6"],"ソフト":["7/8","5/6"],"ドッジ":["5/8","6/7"],},
+            "13:20":{"ドッジ":["6/8","5/7"],"バレー":["5/8","6/7","5/7"]},
+            "13:25":{"サッカー":["5/7"]},
+            "13:30":{"ソフト":["5/7"]},
+            "13:40":{"ドッジ":["5/6","7/8"],"バレー":["5/6","7/8","6/8"]},
+
+            "14:00":{"サッカー":["10/11","9/12"],"ソフト":["10/11","9/12"],"ドッジ":["9/10","11/12"],},
+            "14:20":{"ドッジ":["9/11","10/12"],"バレー":["9/10","11/12","10/12"]},
+            "14:25":{"サッカー":["10/12"]},
+            "14:30":{"ソフト":["10/12"]},
+            "14:40":{"ドッジ":["9/12","10/11"],"バレー":["9/12","10/11","9/11"]},
+            },
+            now_game:[],
+            coming_game:[]
+        },
+        methods:{
+          test_showJson(){
+            console.log(this.score_data)
+            console.log('fdas')
+          }
+        },
+        mounted:function(){
+
+            fetch("https://script.google.com/macros/s/AKfycbyLTgnI34AGsYQUCDZYjo54dNvGztv3-KO4uuZnmynGm_qoxuJzIgzfJ7VSpUmjxCFE/exec")
+                .then(response => response.json())
+                .then(data => {
+                console.log(data); // 受け取ったJSON
+                this.score_data=JSON.parse(data)
+                })
+                .catch(error => console.error("Error:", error));
+          
+          const durations = {
+            "サッカー": 15,
+            "ソフト": 20,
+            "ドッジ": 10,
+            "バレー": 10
+          };
+
+          const currentMinutes = 730//this.now_time.getHours() * 60 + this.now_time.getMinutes();
+
+          // 今やっている競技を記録する配列
+          const ongoing = [];
+          const coming=[];
+
+          for (const time in this.schedule) {
+            const [hour, minute] = time.split(':').map(Number);
+            const startMinutes = hour * 60 + minute;
+
+            for (const sport in this.schedule[time]) {
+              const duration = durations[sport];
+              const endMinutes = startMinutes + duration;
+
+              if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
+                for(const mathes of this.schedule[time][sport]){
+                  ongoing.push({
+                    time,
+                    sport,
+                    matches: mathes
+                  });
+                }
+              }else if(currentMinutes+15 >= startMinutes && currentMinutes+15 < endMinutes){
+                for(const mathes of this.schedule[time][sport]){
+                  coming.push({
+                    time,
+                    sport,
+                    matches: mathes
+                  });
+                }
+              }
+            }
+          }
+
+          // 結果表示
+          if (ongoing.length === 0) {
+            console.log("現在行われている競技はありません。");
+            this.now_game.push("現在開催中の競技はありません。")
+          } else {
+            console.log("現在行われている競技：");
+            ongoing.forEach(entry => {
+              console.log(`${entry.time} 開始の ${entry.sport} - 試合: ${entry.matches}`);
+              this.now_game.push(`${entry.time} 開始 ${entry.sport} -  ${entry.matches[0]+"vs"+entry.matches[2]} `)
+            });
+          }
+          console.log(coming)
+          coming.forEach(entry => {
+            console.log(`${entry.time} 開始の ${entry.sport} - 試合: ${entry.matches}`);
+            this.coming_game.push(`${entry.time} 開始 ${entry.sport} -  ${entry.matches[0]+"vs"+entry.matches[2]} `)
+          });
+
+
+        }
+      });
+    </script>
+
+    <script>
+
+    </script>
+  </body>
+</html>
