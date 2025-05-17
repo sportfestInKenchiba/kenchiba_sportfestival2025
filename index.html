@@ -216,7 +216,7 @@
                     </div>
                   </th>
                   <template v-for="(k,k_index) in teams">
-                    <th v-bind:class="{'cell_paint':!(j_index-k_index),'score_font':true}">
+                    <th v-bind:class="{'cell_paint':!(j_index-k_index),'score_font':true}" style="width:180px">
                       <template v-if="!(j==k)">
                         <div style="margin-top:0px">
                           <template v-if="score_data[page][i][j][j+k]['score'][0]!=score_data[page][i][j][j+k]['score'][2]">
