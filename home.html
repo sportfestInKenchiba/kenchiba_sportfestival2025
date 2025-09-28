@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ja">        
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <title>ホームページ</title>
+    <link rel="stylesheet" href="https://indestructibletype.com/fonts/Jost.css" type="text/css" charset="utf-8" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script> 
+</head>
+<style>
+
+*{
+    margin:0px
+}
+
+#scoreBarWhite{
+    background-color: white;
+    height:50px;
+    border-radius:10px 0px 0px 10px;
+    border-left:2px solid rgb(196, 49, 49);
+    border-top:2px solid rgb(196, 49, 49);
+    border-bottom:2px solid rgb(196, 49, 49);
+    width:50%
+}
+
+#scoreBarRed{
+    background-color: rgb(196, 49, 49);
+    height:50px;
+    border-radius:0px 10px 10px 0px;
+    border-right:2px solid rgb(196, 49, 49);
+    border-top:2px solid rgb(196, 49, 49);
+    border-bottom:2px solid rgb(196, 49, 49);
+    width:50%
+}
+
+.scoreFontRed{
+    font-weight:bold;
+    color:rgb(196, 49, 49);
+    font-family:'Jost'
+}
+
+.scoreFontWhite{
+    font-weight:bold;
+    color:white;
+    font-family:'Jost';
+    -webkit-text-stroke: 2px rgb(196, 49, 49);
+}
+
+.redRankBar{
+    background-color:rgb(196, 49, 49);
+    color:white;
+    font-size:20px;
+    font-weight:bold;
+    font-family: 'jost';
+}
+
+.whiteRankBar{
+    border:1px solid rgb(196, 49, 49);
+    color:rgb(196, 49, 49);
+    font-size:20px;
+    font-weight:bold;
+    font-family: 'jost';
+}
+
+</style>
+<body style="background-color: white;">
+    <div id="app">
+
+    <div style="background-color:rgb(196, 49, 49);height:50px;width:100%;padding:13px" class="d-flex">
+        <p style="color:white;font-size:13px;font-weight:bold" @click="page='home'">ホーム</p>
+        <p style="color:white;font-size:13px;font-weight:bold" class="ms-3" @click="page='view_all'">得点一覧</p>
+        <a href="https://sites.google.com/kenchiba.net/sportsfest" style="text-decoration:none;color:white;font-size:13px;font-weight:bold" class="ms-3">公式サイト</a>
+    </div>
+    <div style="background-size:  cover;background-image: url('imgs/pre.png');text-align:center;border-bottom:solid 1px gray;padding:20px;box-shadow: 0px 5px 4px gray;width:100%;background-color: white;">
+        <div style="text-align: center;" >
+            <img src="imgs/25秋_横-removebg-preview.png" width="60%" style="text-align: center;">
+        </div>
+    </div>
+
+    <div class="m-4 mt-4">
+        <p>※テスト用なので得点や順位は適当です</p>
+        <div v-if="page=='home'">
+            <img src="imgs/score.png" width="200px">
+            <div style="height:2px;background-color:rgb(196, 49, 49);width:100%" class="mt-2"></div>
+            <div class="mt-2">
+                <div class="d-flex justify-content-between">
+                <span style="font-size:45px;font-weight:bold;color:white;font-family:'Jost';-webkit-text-stroke: 2px rgb(196, 49, 49)">{{result.total[1]}}</span>
+                <span style="font-size:47px;font-weight:bold;color:rgb(196, 49, 49);font-family:'Jost'">{{result.total[0]}}</span>
+                </div>
+            </div>
+            <div class="row d-flex" style="margin-top:0px">
+                <div class="" id="scoreBarWhite" v-bind:style="{width:result.total[1]/(result.total[0]+result.total[1])*100+'%'}"></div>
+                <div class="" id="scoreBarRed" v-bind:style="{width:result.total[0]/(result.total[0]+result.total[1])*100+'%'}"></div>
+            </div>
+            <div style="overflow-y: scroll;height:260px;padding-left:20px;padding-right:20px;border-bottom:1px solid rgb(196, 49, 49)">
+                <div class="mt-4">
+                <template v-for="(i,index) in game_list.slice().reverse()">
+                    <template v-if="result['game_score'][i][0]+result['game_score'][i][1]!=0">
+                    <div class="mt-2 mx-auto" style="height:30px;width:2px;background-color:rgb(196, 49, 49)"></div>
+                    <div class="d-flex justify-content-between ps-3 pe-3 mt-2">
+                        <span style="font-size:35px;font-weight:bold;color:white;font-family:'Jost';-webkit-text-stroke: 2px rgb(196, 49, 49);margin-top:20px">{{result.game_score[i][1]}}</span>
+                        <div style="text-align: center;">
+                        <img src="imgs/teamdance.svg" style="width:120px;" @click="page=i">
+                        <p style="font-size:20px;color:rgb(196, 49, 49)" class="fw-bold">{{game_list_jp.slice().reverse()[index]}}</p>
+                        </div>
+                        <span style="font-size:37px;font-weight:bold;color:rgb(196, 49, 49);font-family:'Jost';margin-top:20px">{{result.game_score[i][0]}}</span>
+                    </div>
+                    </template>
+                </template>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+            <button @click="page='view_all'" class=" mx-auto" style="text-decoration:none;width:80%;border:2px solid rgb(196, 49, 49);border-radius:30px;font-family:'jost';font-size:25px;background-color:white;color:rgb(196, 49, 49)">View All</button>
+            </div>
+            <div class="card mt-3 pt-2 ps-3 pe-3 pb-3" style="background-color:rgb(196, 49, 49);">
+                <p style="font-size:30px;color:white;font-family:'jost';font-weight:bold">NEXT</p>
+                <div style="height:2px;background-color:white;width:100%;margin-top:-15px"></div>
+                <div class="d-flex" style="margin-top:10px">
+                <img src="imgs/next.svg" style="width:80px">
+                <p style="font-size:30px;color:white;font-family:'jost';font-weight:bold" class="ms-3 mt-3">TEAM DANCING</p>
+                </div>
+            </div>
+        </div>
+
+        <div v-else-if="page=='select'" class="p-3">
+            <div class="d-flex justify-content-between">
+                <p class="scoreFontWhite" style="font-size:35px;margin-top:30px">342</p>
+                <img src="imgs/teamdance.svg" style="width:120px;">
+                <p class="scoreFontRed" style="font-size:35px;margin-top:30px">594</p>
+            </div>
+            <div class="mt-2 mx-auto" style="height:40px;width:2px;background-color:rgb(196, 49, 49)"></div>
+            <div class="d-flex justify-content-between">
+                <p class="scoreFontWhite" style="font-size:35px;margin-top:30px">342</p>
+                <img src="imgs/teamdance.svg" style="width:120px;">
+                <p class="scoreFontRed" style="font-size:35px;margin-top:30px">594</p>
+            </div>        
+        </div>
+
+        <div v-else-if="page=='typhoon'">
+            <button @click="page='home'" class="d-block mt-3" style="text-decoration:none;width:80px;background-color:rgb(196, 49, 49);border-radius:0px 80px 80px 0px;font-size:15px;color:white;border:none;height:30px;font-weight:bold">ホームへ</button>
+            <div class="d-flex">
+            <img src="imgs/teamdance.svg" style="width:120px">
+            <p class="scoreFontRed" style="font-size:30px;margin-top:30px;margin-left:20px">EYE OF TYPHOON</p>
+            </div>
+            <div style="height:2px;background-color:rgb(196, 49, 49);width:100%" class="mt-2"></div>
+            <template v-for="j in 2">
+            <div class="card" style="padding:15px;margin-top:20px;border:1px solid rgb(196, 49, 49)">
+                <p style="border-radius:80px;padding:10px;font-weight:bold;border:1px solid rgb(196, 49, 49);font-size:15px;width:120px;color:rgb(196, 49, 49);text-align: center;">第{{j}}レース</p>
+                <template v-for="(i,index) in result['typhoon'][j-1]">
+                    <div class="card mb-2 pt-2 ps-3" v-bind:class="{card:true,'mb-2':true,whiteRankBar:team[3].includes(i[2]),redRankBar:team[2].includes(i[2])}" 
+                    style="height:45px">
+                        <p>{{index+1}}<span class="ms-5">{{i}}</span><span style="float: right" class="me-3">{{score_config.typhoon_score[index]}}p</span></p>
+                    </div>
+                </template>
+            </div>
+            </template>
+        </div>
+
+        <div v-else-if="page=='all_relay'">
+            <button @click="page='home'" class="d-block mt-3" style="text-decoration:none;width:80px;background-color:rgb(196, 49, 49);border-radius:0px 80px 80px 0px;font-size:15px;color:white;border:none;height:30px;font-weight:bold">ホームへ</button>
+            <div class="d-flex mt-3">
+            <img src="imgs/teamdance.svg" style="width:120px">
+            <p class="scoreFontRed" style="font-size:30px;margin-top:30px;margin-left:20px">ALL STAR RELAY</p>
+            </div>
+            <div style="height:2px;background-color:rgb(196, 49, 49);width:100%" class="mt-2"></div>
+            <template v-for="j in 3">
+            <div class="card" style="padding:15px;margin-top:20px;border:1px solid rgb(196, 49, 49)">
+                <p style="border-radius:80px;padding:10px;font-weight:bold;border:1px solid rgb(196, 49, 49);font-size:15px;width:120px;color:rgb(196, 49, 49);text-align: center;">第{{j}}レース</p>
+                <template v-for="(i,index) in result['all_relay'][j-1]">
+                    <div class="card mb-2 pt-2 ps-3" v-bind:class="{card:true,'mb-2':true,whiteRankBar:team[3].includes(i[2]) || team[1].includes(i),redRankBar:team[2].includes(i[2]) || team[0].includes(i)}" 
+                    style="height:45px">
+                        <p>{{index+1}}<span class="ms-5">{{i}}</span><span style="float: right" class="me-3">{{score_config.long_jump[index]}}p</span></p>
+                    </div>
+                </template>
+            </div>
+            </template>
+        </div>
+
+        <div v-else-if="page=='borrow_race'">
+            <button @click="page='home'" class="d-block mt-3" style="text-decoration:none;width:80px;background-color:rgb(196, 49, 49);border-radius:0px 80px 80px 0px;font-size:15px;color:white;border:none;height:30px;font-weight:bold">ホームへ</button>
+            <div class="d-flex mt-3">
+            <img src="imgs/teamdance.svg" style="width:120px">
+            <p class="scoreFontRed" style="font-size:30px;margin-top:30px;margin-left:20px">BORROW TO BORROW RACE</p>
+            </div>
+            <div style="height:2px;background-color:rgb(196, 49, 49);width:100%" class="mt-2"></div>
+            <template v-for="j in 6">
+            <div class="card" style="padding:15px;margin-top:20px;border:1px solid rgb(196, 49, 49)">
+                <p style="border-radius:80px;padding:10px;font-weight:bold;border:1px solid rgb(196, 49, 49);font-size:15px;width:120px;color:rgb(196, 49, 49);text-align: center;">第{{j}}レース</p>
+                <div class="d-flex">
+                <p style="font-size:15px;margin-left:40px;color:rgb(196, 49, 49)" class="fw-bold ">中学</p>
+                <p style="font-size:15px;margin-left:45px;color:rgb(196, 49, 49)" class="fw-bold ">高1</p>
+                <p style="font-size:15px;margin-left:47px;color:rgb(196, 49, 49)" class="fw-bold ">高2</p>
+                <p style="font-size:15px;margin-left:47px;color:rgb(196, 49, 49)" class="fw-bold ">高3</p>
+                </div>
+                <template v-for="i in 4">
+                    <div class="d-flex">
+                    <p style="font-size:25px;font-family:'jost';color:rgb(196, 49, 49)" class="me-3 fw-bold">{{i}}</p>
+                    <div class="d-flex">
+                    <template v-for="k in result['borrow_race'][j-1][i-1]">
+                        <template v-if="k!=null">
+                            <div class="mr-3 pt-2" v-bind:class="{card:true,'mb-2':true,whiteRankBar:team[3].includes(k[2]) || team[1].includes(k),redRankBar:team[2].includes(k[2]) || team[0].includes(k)}" 
+                            style="height:40px;width:53px;margin-right:15px;font-size:15px;text-align: center;">
+                                {{k}}
+                            </div>
+                        </template>
+                    </template>
+                    </div>
+                    <p style="float: right;color:rgb(196, 49, 49);font-family:'jost';font-size:25px" class="me-3 fw-bold" >
+                        {{score_config.borrow_race[i-1]}}p</p>
+                    </div>
+                </template>
+            </div>
+            </template>
+        </div>
+
+        <div v-else-if="page=='long_jump'">
+            <button @click="page='home'" class="d-block mt-3" style="text-decoration:none;width:80px;background-color:rgb(196, 49, 49);border-radius:0px 80px 80px 0px;font-size:15px;color:white;border:none;height:30px;font-weight:bold">ホームへ</button>
+            <div class="d-flex mt-3">
+            <img src="imgs/teamdance.svg" style="width:120px">
+            <p class="scoreFontRed" style="font-size:30px;margin-top:30px;margin-left:20px">LONG ROPE JUMP</p>
+            </div>
+            <div style="height:2px;background-color:rgb(196, 49, 49);width:100%" class="mt-2"></div>
+            <template v-for="j in 3">
+                <div class="card" style="padding:15px;margin-top:20px;border:1px solid rgb(196, 49, 49)">
+                    <p style="border-radius:80px;padding:10px;font-weight:bold;border:1px solid rgb(196, 49, 49);font-size:15px;width:120px;color:rgb(196, 49, 49);text-align: center;">第{{j}}試合</p>
+                    <template v-for="(i,index) in result['long_jump'][j-1]">
+                        <div class="card mb-2 pt-2 ps-3" v-bind:class="{card:true,'mb-2':true,whiteRankBar:team[3].includes(i[0][2]) || team[1].includes(i[0]),redRankBar:team[2].includes(i[0][2]) || team[0].includes(i[0])}" 
+                        style="height:73px">
+                        <div class="d-flex">
+                            <p style="margin-top:12px">{{index+1}}</p>
+                            <div class="ms-1">
+                            <p class="ms-4 ">{{i[0]}}</p>
+                            <p class="ms-3" style="margin-top:-20px">{{i[3]}}回</p>
+                            </div>
+                            <div class="ms-4" style="margin-top:7px">
+                                <p style="font-size:13px">大繩 : {{i[1]}}</p>
+                                <p style="font-size:13px;margin-top:-10px">8の字 : {{i[2]}}</p>
+                            </div>
+                            <p style="margin-top:12px" class="ms-auto me-3">{{score_config.all_relay_score[index]}}p</p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+
+        <div v-else-if="page=='ball_toss'">
+            <button @click="page='home'" class="d-block mt-3" style="text-decoration:none;width:80px;background-color:rgb(196, 49, 49);border-radius:0px 80px 80px 0px;font-size:15px;color:white;border:none;height:30px;font-weight:bold">ホームへ</button>
+            <div class="d-flex mt-3">
+            <img src="imgs/teamdance.svg" style="width:120px">
+            <p class="scoreFontRed" style="font-size:30px;margin-top:30px;margin-left:20px">OBSTACLE BALL TOSS</p>
+            </div>
+            <div style="height:2px;background-color:rgb(196, 49, 49);width:100%" class="mt-2"></div>
+            <template v-for="j in 3">
+                <div class="card" style="padding:15px;margin-top:20px;border:1px solid rgb(196, 49, 49)">
+                    <p style="border-radius:80px;padding:10px;font-weight:bold;border:1px solid rgb(196, 49, 49);font-size:15px;width:120px;color:rgb(196, 49, 49);text-align: center;">第{{j}}試合</p>
+                    <template v-for="(i,index) in result['ball_toss'][j-1]">
+                        <div class="card mb-2 pt-2 ps-3" v-bind:class="{card:true,'mb-2':true,whiteRankBar:team[3].includes(i[0][2]) || team[1].includes(i[0]),redRankBar:team[2].includes(i[0][2]) || team[0].includes(i[0])}" 
+                        style="height:73px">
+                        <div class="d-flex">
+                            <!--<p style="margin-top:12px">{{index+1}}</p>-->
+                            <div class="ms-1" style="font-size:15px">
+                            <p class=" ">{{i[0]}}</p>
+                            <p class="" style="margin-top:-20px">&</p>
+                            <p class="" style="margin-top:-20px">{{i[1]}}</p>
+                            </div>
+                            <p class="ms-4" style="font-size:25px;margin-top:10px">{{i[5]}}球</p>
+                            <div class="ms-3" style="margin-top:7px">
+                                <p style="font-size:13px">獲得球 : {{i[3]}}</p>
+                                <p style="font-size:13px;margin-top:-10px">お邪魔した球 : {{i[4]}}</p>
+                            </div>
+                            <!--<p style="margin-top:12px" class="ms-auto me-3">{{score_config.all_relay_score[index]}}p</p>-->
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+
+        <div v-else-if="page=='vertical_relay'">
+            <button @click="page='home'" class="d-block mt-3" style="text-decoration:none;width:80px;background-color:rgb(196, 49, 49);border-radius:0px 80px 80px 0px;font-size:15px;color:white;border:none;height:30px;font-weight:bold">ホームへ</button>
+            <div class="d-flex mt-3">
+            <img src="imgs/teamdance.svg" style="width:120px">
+            <p class="scoreFontRed" style="font-size:30px;margin-top:30px;margin-left:20px">VERTICAL RELAY</p>
+            </div>
+            <div style="height:2px;background-color:rgb(196, 49, 49);width:100%" class="mt-2"></div>
+            <template v-for="j in 1">
+                <div class="card" style="padding:15px;margin-top:20px;border:1px solid rgb(196, 49, 49)">
+                    <p style="border-radius:80px;padding:10px;font-weight:bold;border:1px solid rgb(196, 49, 49);font-size:15px;width:120px;color:rgb(196, 49, 49);text-align: center;">第{{j}}試合</p>
+                    <template v-for="(i,index) in result['vertical_relay']">
+                        <div class="card mb-2 pt-2 ps-3" v-bind:class="{card:true,'mb-2':true,whiteRankBar:team[3].includes(i[0]) || team[1].includes(i[0]),redRankBar:team[2].includes(i[0]) || team[0].includes(i[0])}" 
+                        style="height:73px">
+                        <div class="d-flex">
+                            <p style="margin-top:12px">{{index+1}}</p>
+                            <p class="ms-3" style="margin-top:13px">{{i[0]}} & {{i[1]}} & {{i[2]}}</p>
+                            <p style="margin-top:12px" class="ms-auto me-3">{{score_config.vertical_relay[index]}}p</p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+
+        <div v-else-if="page=='view_all'">
+            <template v-for="(i,index) in game_list.slice().reverse()">
+                <template v-if="result['game_score'][i][0]+result['game_score'][i][1]!=0">
+                <div class="d-flex justify-content-between ps-3 pe-3 mt-2">
+                    <span style="font-size:35px;font-weight:bold;color:white;font-family:'Jost';-webkit-text-stroke: 2px rgb(196, 49, 49);margin-top:20px">{{result.game_score[i][1]}}</span>
+                    <div style="text-align: center;">
+                    <img src="imgs/teamdance.svg" style="width:120px;" @click="page=i">
+                    <p style="font-size:20px;color:rgb(196, 49, 49)" class="fw-bold">{{game_list_jp.slice().reverse()[index]}}</p>
+                    </div>
+                    <span style="font-size:37px;font-weight:bold;color:rgb(196, 49, 49);font-family:'Jost';margin-top:20px">{{result.game_score[i][0]}}</span>
+                </div>
+                <div class="mt-2 mx-auto" style="height:30px;width:2px;background-color:rgb(196, 49, 49)"></div>
+                </template>
+            </template>
+            <div class="ps-3 pe-3">
+                <div class="">
+                    <div class="d-flex justify-content-between">
+                    <span style="font-size:45px;font-weight:bold;color:white;font-family:'Jost';-webkit-text-stroke: 2px rgb(196, 49, 49)">{{result.total[1]}}</span>
+                    <span style="font-size:47px;font-weight:bold;color:rgb(196, 49, 49);font-family:'Jost'">{{result.total[0]}}</span>
+                    </div>
+                </div>
+                <div class="row d-flex" style="margin-top:0px">
+                    <div class="" id="scoreBarWhite" v-bind:style="{width:result.total[1]/(result.total[0]+result.total[1])*100+'%'}"></div>
+                    <div class="" id="scoreBarRed" v-bind:style="{width:result.total[0]/(result.total[0]+result.total[1])*100+'%'}"></div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="game_list.includes(page)">
+            <div class="d-flex justify-content-between mt-4 ps-4 pe-4">
+                <span style="font-size:35px;margin-top:20px" class="scoreFontWhite">{{result.game_score[page][1]}}</span>
+                <div style="text-align: center;">
+                    <img src="imgs/longjump.svg" style="width:150px;">
+                </div>
+                <span style="font-size:37px;margin-top:20px" class="scoreFontRed">{{result.game_score[page][0]}}</span>
+            </div>
+            <div style="height:2px;background-color:rgb(196, 49, 49);width:100%" class="mt-3"></div>
+            <div class="mt-2 ps-3 pe-3">
+                <div class="d-flex justify-content-between">
+                <span style="font-size:45px;font-weight:bold;color:white;font-family:'Jost';-webkit-text-stroke: 2px rgb(196, 49, 49)">{{result.total[1]}}</span>
+                <span style="font-size:47px;font-weight:bold;color:rgb(196, 49, 49);font-family:'Jost'">{{result.total[0]}}</span>
+                </div>
+            </div>
+            <div class="row d-flex ps-3 pe-3" style="margin-top:0px">
+                <div class="" id="scoreBarWhite" v-bind:style="{width:result.total[1]/(result.total[0]+result.total[1])*100+'%'}"></div>
+                <div class="" id="scoreBarRed" v-bind:style="{width:result.total[0]/(result.total[0]+result.total[1])*100+'%'}"></div>
+            </div>
+            <button @click="page='home'" class="d-block mx-auto mt-4" style="text-decoration:none;width:50%;background-color:rgb(196, 49, 49);border-radius:80px;font-size:20px;color:white;border:none;height:50px">ホームへ</button>
+        </div>
+
+
+
+    </div>
+    <footer class="bg-dark text-white py-3 mt-auto" style="height:80px">
+        <div class="container d-flex justify-content-between mt-4">
+            <span>県千葉体育祭執行部</span>
+            <span></span>
+        </div>
+    </footer>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+
+    <script>
+    new Vue({
+        el: '#app',
+        data: {
+            page:"home",
+            result:{'typhoon':[["3-B","3-A","3-E","3-C"],["3-D","3-F","3-H","3-G"]],
+            'game_score':{'typhoon':[140,145],'all_relay':[80,95],'borrow_race':[50,60],'long_jump':[90,80],
+                'ball_toss':[50,70],'vertical_relay':[40,50]
+            },
+            'all_relay': [["1-2","2-2","2-1","3-2","3-1","1-1"],
+            ["1-D","1-C","1-E","1-H","1-A","1-B","1-F","1-G"],
+            ["2-B","2-A","2-D","2-C","2-G","2-E","2-F","2-H"]],
+            'borrow_race':[ [ [ '1-1', '1-B', '2-D', '3-A' ],[ '1-1', '1-H', '2-E', '3-E' ],
+            [ '1-2', '1-A', '2-C', '3-H' ],[ '1-2', '1-E', '2-A', '3-D' ] ],
+            [ [ '1-2', '1-E', '2-D', '3-A' ],[ '1-1', '1-D', '2-E', '3-E' ],
+            [ '1-1', '1-A', '2-C', '3-H' ],[ '1-2', '1-B', '2-A', '3-D' ] ],
+            [ [ '2-2', '1-B', '2-D', '3-A' ],[ '2-2', '1-H', '2-E', '3-E' ],
+            [ '2-1', '1-A', '2-C', '3-H' ],[ '2-1', '1-E', '2-A', '3-D' ] ],
+            [ [ '2-1', '1-E', '2-D', '3-A' ],[ '2-2', '1-D', '2-E', '3-E' ],
+            [ '2-2', '1-A', '2-C', '3-H' ],[ '2-1', '1-B', '2-A', '3-D' ] ],
+            [ [ '3-1', '1-B', '2-D', '3-A' ],[ '3-1', '1-H', '2-E', '3-E' ],
+            [ '3-2', '1-A', '2-C', '3-H' ],[ '3-2', '1-E', '2-A', '3-D' ] ],
+            [ [ '3-2', undefined, undefined, undefined ],[ '3-1', undefined, undefined, undefined ],
+            [ '3-2', undefined, undefined, undefined ],[ '3-1', undefined, undefined, undefined ] ] ],
+            'long_jump':[ [ [ '2-1', 50, 290, 350, 1 ],[ '1-2', 40, 280, 400, 2 ],
+            [ '1-1', 35, 300, 500, 3 ],[ '2-2', 60, 295, 380, 4 ] ],
+            [ [ '2-F', 35, 260, 390, 1 ],[ '2-E', 40, 320, 490, 2 ],
+            [ '2-C', 45, 290, 500, 3 ],[ '2-B', 50, 280, 420, 4 ],
+            [ '2-G', 20, 280, 390, 5 ],[ '2-D', 45, 290, 530, 6 ],
+            [ '2-H', 50, 285, 370, 7 ],[ '2-A', 20, 300, 400, 8 ] ],
+            [ [ '3-E', 40, 320, 500, 1 ],[ '3-G', 20, 280, 490, 2 ],
+            [ '3-A', 20, 300, 350, 3 ],[ '3-B', 50, 280, 380, 4 ],
+            [ '3-H', 50, 285, 500, 5 ],[ '3-F', 35, 260, 530, 6 ],
+            [ '3-C', 45, 290, 400, 7 ],[ '3-D', 45, 290, 420, 8 ] ] ],
+            'ball_toss':[ [ [ '1-A', '1-1', '1-B', 50, 20, 70 ],[ '1-E', '1-2', '1-C', 60, 15, 70 ],
+            [ '1-B', '1-2', '1-A', 40, 20, 60 ],[ '1-F', '1-1', '1-H', 50, 30, 60 ],
+            [ '1-H', '1-2', '1-F', 30, 10, 60 ],[ '1-G', '1-2', '1-D', 40, 20, 50 ],
+            [ '1-C', '1-1', '1-E', 30, 10, 45 ],[ '1-D', '1-1', '1-G', 20, 10, 40 ] ],
+            [ [ '2-A', '2-1', '2-B', 50, 20, 70 ],[ '2-E', '2-2', '2-C', 60, 15, 70 ],
+            [ '2-D', '2-1', '2-G', 50, 20, 70 ],[ '2-H', '2-2', '2-F', 60, 15, 70 ],
+            [ '2-B', '2-2', '2-A', 40, 20, 60 ],[ '2-G', '2-2', '2-D', 40, 20, 60 ],
+            [ '2-C', '2-1', '2-E', 30, 10, 45 ],[ '2-F', '2-1', '2-H', 30, 10, 45 ] ],
+            [ [ '3-A', '3-1', '3-B', 50, 20, 70 ],[ '3-E', '3-2', '3-C', 60, 15, 70 ],
+            [ '3-D', '3-1', '3-G', 50, 20, 70 ],[ '3-H', '3-2', '3-F', 60, 15, 70 ],
+            [ '3-B', '3-2', '3-A', 40, 20, 60 ],[ '3-G', '3-2', '3-D', 40, 20, 60 ],
+            [ '3-C', '3-1', '3-E', 30, 10, 45 ],[ '3-F', '3-1', '3-H', 30, 10, 45 ] ] ],
+            'vertical_relay':[ [ 'B', 'E', 2, 1 ],[ 'A', 'F', 1, 2 ],[ 'C', 'D', 1, 3 ],[ 'G', 'H', 2, 4 ] ],
+            'total':[120,210]
+            },
+            team_num:[[0,2,3,5],[1,4,6,7]],
+            team:[['1-1','2-1','3-1'],['1-2','2-2','3-2'],['A','C','D','F'],['B','E','G','H']],
+            score_config:{
+                typhoon_score:[20,14,9,5],
+                all_relay_score:[25,20,16,12,8,6,4,2],
+                borrow_race:[4,3,2,1],
+                long_jump:[25,20,16,12,8,6,4,2],
+                vertical_relay:[10,7,5,3]
+            },
+            game_list:['typhoon','all_relay','borrow_race','ball_toss','long_jump','vertical_relay'],
+            game_list_jp:['台風の目','全員リレー','借人競争','お邪魔玉入れ','大縄跳び','縦割りリレー']
+        },
+        /***mounted:function(){
+            fetch("https://script.google.com/macros/s/AKfycbzT8SFiv-KjLJU8Sr8gaARyJZ5p0egrpkql4QA5bQqsX04JxvJLyZ7vl4KmSSM-s3F-/exec")
+                .then(response => response.json())
+                .then(data => {
+                console.log(data); // 受け取ったJSON
+                this.result=JSON.parse(data)
+                })
+                .catch(error => console.error("Error:", error));
+        }***/
+
+    })
+    </script>
+
+</body>
+</html>
