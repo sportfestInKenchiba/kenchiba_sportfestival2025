@@ -402,6 +402,7 @@
                 <span style="font-size:27px;margin-top:20px" class="scoreFontRed">{{result.game_score[page][0]}}</span>
             </div>
             <div style="height:2px;background-color:rgb(196, 49, 49);width:100%" class="mt-3"></div>
+            <template v-if="time_flag==true">
             <div class="mt-2 ps-3 pe-3">
                 <div class="d-flex justify-content-between">
                 <span style="font-size:30px;font-weight:bold;color:white;font-family:'Jost';-webkit-text-stroke: 2px rgb(196, 49, 49)">{{result.total[1]}}</span>
@@ -412,6 +413,19 @@
                 <div class="" id="scoreBarWhite" v-bind:style="{width:result.total[1]/(result.total[0]+result.total[1])*100+'%'}"></div>
                 <div class="" id="scoreBarRed" v-bind:style="{width:result.total[0]/(result.total[0]+result.total[1])*100+'%'}"></div>
             </div>
+            </template>
+            <template v-else>
+                <div class="mt-2 ps-3 pe-3">
+                    <div class="d-flex justify-content-between">
+                    <span style="font-size:30px;font-weight:bold;color:white;font-family:'Jost';-webkit-text-stroke: 2px rgb(196, 49, 49)">???</span>
+                    <span style="font-size:32px;font-weight:bold;color:rgb(196, 49, 49);font-family:'Jost'">???</span>
+                    </div>
+                </div>
+                <div class="row d-flex ps-3 pe-3" style="margin-top:0px">
+                    <div class="" id="scoreBarWhite" style="width:50%"></div>
+                    <div class="" id="scoreBarRed" style="width:50%"></div>
+                </div>
+            </template>
             <button @click="page='home'" class="d-block mx-auto mt-4" style="text-decoration:none;width:110px;background-color:rgb(196, 49, 49);border-radius:80px;font-size:15px;color:white;border:none;height:35px">ホームへ</button>
         </div>
 
