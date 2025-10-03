@@ -228,7 +228,7 @@
             <div class="card" style="padding:15px;margin-top:20px;border:1px solid rgb(196, 49, 49)">
                 <p style="border-radius:80px;padding:5px;font-weight:bold;border:1px solid rgb(196, 49, 49);font-size:12px;width:90px;color:rgb(196, 49, 49);text-align: center;">第{{j}}レース</p>
                 <div class="d-flex">
-                <p style="font-size:12px;margin-left:33px;color:rgb(196, 49, 49)" class="fw-bold ">中学</p>
+                <p style="font-size:12px;margin-left:33px;color:rgb(196, 49, 49)" class="fw-bold ">中学{{Math.ceil(j/2)}}</p>
                 <p style="font-size:12px;margin-left:38px;color:rgb(196, 49, 49)" class="fw-bold ">高1</p>
                 <p style="font-size:12px;margin-left:38px;color:rgb(196, 49, 49)" class="fw-bold ">高2</p>
                 <p style="font-size:12px;margin-left:38px;color:rgb(196, 49, 49)" class="fw-bold ">高3</p>
@@ -239,7 +239,7 @@
                     <div class="d-flex">
                     <template v-for="k in result['borrow_race'][j-1][i-1]">
                         <template v-if="k!=null">
-                            <div class="mr-3 pt-2" v-bind:class="{card:true,'mb-2':true,whiteRankBar:team[3].includes(k),redRankBar:team[2].includes(k)}" 
+                            <div class="mr-3 pt-2" v-bind:class="{card:true,'mb-2':true,whiteRankBar:team[3].includes(k) || k=='2',redRankBar:team[2].includes(k) || k=='1'}" 
                             style="height:35px;width:40px;margin-right:15px;font-size:12px;text-align: center;">
                                 {{k}}
                             </div>
